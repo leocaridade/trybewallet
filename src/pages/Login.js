@@ -32,7 +32,10 @@ class Login extends Component {
 
     return (
       <div>
-        <form onSubmit={ this.handleSubmit }>
+        <form
+          className="login-form"
+          onSubmit={ this.handleSubmit }
+        >
           <input
             type="email"
             data-testid="email-input"

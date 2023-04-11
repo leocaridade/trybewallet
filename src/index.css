@@ -12,7 +12,7 @@ code {
     monospace;
 }
 
-form {
+.login-form {
   display: flex;
   flex-direction: column;
   width: 250px;
