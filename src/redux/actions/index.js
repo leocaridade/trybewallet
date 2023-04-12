@@ -1,14 +1,20 @@
-import { fetchCurrencies } from '../../services/currencyAPI';
+import { fetchCurrencies, fetchCurrenciesInput } from '../../services/currencyAPI';
 
 export const USER_LOGIN = 'USER_LOGIN';
+export const FETCH_REQUEST = 'FETCH_REQUEST';
 export const FETCH_CURRENCIES_SUCCESS = 'FETCH_CURRENCIES_SUCCESS';
-export const FETCH_CURRENCIES_FAILURE = 'FETCH_CURRENCIES_FAILURE';
+export const FETCH_FAILURE = 'FETCH_FAILURE';
+export const FETCH_SUCCESS = 'FETCH_SUCCESS';
 
 export const userLogin = (email) => ({
   type: USER_LOGIN,
   payload: {
     email,
   },
+});
+
+const fetchRequest = () => ({
+  type: FETCH_REQUEST,
 });
 
 const fetchCurrenciesSuccess = (currencies) => ({
@@ -18,8 +24,8 @@ const fetchCurrenciesSuccess = (currencies) => ({
   },
 });
 
-const fetchCurrenciesFailure = (errorMessage) => ({
-  type: FETCH_CURRENCIES_FAILURE,
+const fetchFailure = (errorMessage) => ({
+  type: FETCH_FAILURE,
   payload: {
     errorMessage,
   },
@@ -27,9 +33,26 @@ const fetchCurrenciesFailure = (errorMessage) => ({
 
 export const fetchCurrenciesThunk = () => async (dispatch) => {
   try {
-    const currencies = await fetchCurrencies();
+    dispatch(fetchRequest());
+    const currencies = await fetchCurrenciesInput();
     dispatch(fetchCurrenciesSuccess(currencies));
   } catch (error) {
-    dispatch(fetchCurrenciesFailure('Algo deu errado!'));
+    dispatch(fetchFailure('Algo deu errado!'));
+  }
+};
+
+const fetchSuccess = (expenses) => ({
+  type: FETCH_SUCCESS,
+  payload: expenses,
+});
+
+export const fetchThunk = (state) => async (dispatch) => {
+  try {
+    dispatch(fetchRequest());
+    const currencies = await fetchCurrencies();
+    const expenses = { ...state, exchangeRates: currencies };
+    dispatch(fetchSuccess(expenses));
+  } catch (error) {
+    dispatch(fetchFailure('Algo deu errado!'));
   }
 };
