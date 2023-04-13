@@ -5,6 +5,7 @@ export const FETCH_REQUEST = 'FETCH_REQUEST';
 export const FETCH_CURRENCIES_SUCCESS = 'FETCH_CURRENCIES_SUCCESS';
 export const FETCH_FAILURE = 'FETCH_FAILURE';
 export const FETCH_SUCCESS = 'FETCH_SUCCESS';
+export const REMOVE_EXPENSE = 'REMOVE_EXPENSE';
 
 export const userLogin = (email) => ({
   type: USER_LOGIN,
@@ -56,3 +57,10 @@ export const fetchThunk = (state) => async (dispatch) => {
     dispatch(fetchFailure('Algo deu errado!'));
   }
 };
+
+export const removeExpense = (id) => ({
+  type: REMOVE_EXPENSE,
+  payload: {
+    id,
+  },
+});
