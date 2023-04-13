@@ -4,6 +4,8 @@ import {
   FETCH_FAILURE,
   FETCH_SUCCESS,
   REMOVE_EXPENSE,
+  SELECT_EXPENSE_TO_EDIT,
+  EDIT_EXPENSE,
 } from '../actions';
 
 const INITIAL_STATE = {
@@ -15,13 +17,20 @@ const INITIAL_STATE = {
   isLoading: false,
 };
 
+const updateExpenses = (expenses, idToEdit, updatedExpense) => expenses.map((expense) => {
+  if (expense.id === idToEdit) {
+    return {
+      ...expense,
+      ...updatedExpense,
+    };
+  }
+  return expense;
+});
+
 const wallet = (state = INITIAL_STATE, action) => {
   switch (action.type) {
   case FETCH_REQUEST: {
-    return {
-      ...state,
-      isLoading: true,
-    };
+    return { ...state, isLoading: true };
   }
   case FETCH_CURRENCIES_SUCCESS: {
     return {
@@ -48,6 +57,22 @@ const wallet = (state = INITIAL_STATE, action) => {
     return {
       ...state,
       expenses: state.expenses.filter((expense) => expense.id !== action.payload.id),
+    };
+  }
+  case SELECT_EXPENSE_TO_EDIT: {
+    return { ...state, editor: true, idToEdit: Number(action.payload.id),
+    };
+  }
+  case EDIT_EXPENSE: {
+    const updatedExpenses = updateExpenses(
+      state.expenses,
+      state.idToEdit,
+      action.payload.expense,
+    );
+    return {
+      ...state,
+      editor: false,
+      expenses: updatedExpenses,
     };
   }
   default: return state;
