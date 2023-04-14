@@ -98,4 +98,55 @@ describe('Testa o comportamento da página "Wallet"', () => {
     expect(totalField).toBeInTheDocument();
     expect(totalField).toHaveTextContent('49.09');
   });
+
+  it('Verifica o funcionamento dos botões de editar e remover uma despesa', () => {
+    const initialState = {
+      wallet: {
+        currencies: ['USD'],
+        expenses: [{
+          value: '10',
+          currency: 'USD',
+          exchangeRates: {
+            USD: {
+              ask: '4.909',
+            },
+          },
+        }],
+        isLoading: false,
+      },
+    };
+    renderWithRouterAndRedux(<App />, { initialEntries: ['/carteira'], initialState });
+    const totalField = screen.getByTestId('total-field');
+    expect(totalField).toBeInTheDocument();
+    expect(totalField).toHaveTextContent('49.09');
+
+    const addExpenseBtn = screen.getByRole('button', { name: 'Adicionar despesa' });
+    const editBtn = screen.getByRole('button', { name: 'Editar' });
+    const removeBtn = screen.getByRole('button', { name: 'Excluir' });
+    expect(addExpenseBtn).toBeInTheDocument();
+    expect(editBtn).toBeInTheDocument();
+    expect(removeBtn).toBeInTheDocument();
+
+    userEvent.click(editBtn);
+    const editExpenseBtn = screen.getByRole('button', { name: 'Editar despesa' });
+    expect(editExpenseBtn).toBeInTheDocument();
+    userEvent.click(removeBtn);
+    expect(totalField).toHaveTextContent('0.00');
+  });
+
+  it('Verifica se ao digitar no formulário, modifica o estado inicial', () => {
+    renderWithRouterAndRedux(<App />, { initialEntries: ['/carteira'] });
+
+    const methodInput = screen.getByRole('combobox', { name: /método de pagamento:/i });
+    expect(methodInput).toBeInTheDocument();
+    expect(methodInput).toHaveDisplayValue('Dinheiro');
+    userEvent.selectOptions(methodInput, 'Cartão de débito');
+    expect(methodInput).toHaveDisplayValue('Cartão de débito');
+
+    const descriptionInput = screen.getByRole('textbox', { name: /descrição:/i });
+    expect(descriptionInput).toBeInTheDocument();
+    expect(descriptionInput).toHaveDisplayValue('');
+    userEvent.type(descriptionInput, 'Chocolate');
+    expect(descriptionInput).toHaveDisplayValue('Chocolate');
+  });
 });
