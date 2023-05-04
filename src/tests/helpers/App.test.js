@@ -149,4 +149,52 @@ describe('Testa o comportamento da página "Wallet"', () => {
     userEvent.type(descriptionInput, 'Chocolate');
     expect(descriptionInput).toHaveDisplayValue('Chocolate');
   });
+
+  it('Verifica se, ao clicar no botão de adicionar despesa, é renderizado os elementos da tabela', () => {
+    const initialState = {
+      wallet: {
+        currencies: ['USD'],
+        expenses: [{
+          value: '10',
+          currency: 'USD',
+          method: 'Dinheiro',
+          tag: 'Alimentação',
+          description: 'Burger King',
+          exchangeRates: {
+            USD: {
+              name: 'Dólar Americano/Real Brasileiro',
+              ask: '4.909',
+            },
+          },
+        }],
+        isLoading: false,
+      },
+    };
+    renderWithRouterAndRedux(<App />, { initialEntries: ['/carteira'], initialState });
+    const addExpenseBtn = screen.getByRole('button', { name: /adicionar despesa/i });
+    expect(addExpenseBtn).toBeInTheDocument();
+    userEvent.click(addExpenseBtn);
+
+    const descriptionHeader = screen.getByRole('columnheader', { name: /descrição/i });
+    const descriptionCell = screen.getByRole('cell', { name: /burger king/i });
+    const currencyHeader = screen.getByRole('columnheader', { name: 'Moeda' });
+    const currencyCell = screen.getByRole('cell', { name: /dólar americano\/real brasileiro/i });
+    const editBtn = screen.getByRole('button', { name: 'Editar' });
+    const removeBtn = screen.getByRole('button', { name: 'Excluir' });
+
+    expect(descriptionHeader).toBeInTheDocument();
+    expect(descriptionCell).toBeInTheDocument();
+    expect(currencyHeader).toBeInTheDocument();
+    expect(currencyCell).toBeInTheDocument();
+    expect(editBtn).toBeInTheDocument();
+    expect(removeBtn).toBeInTheDocument();
+
+    userEvent.click(editBtn);
+    const descriptionInput = screen.getByRole('textbox', { name: /descrição:/i });
+    userEvent.type(descriptionInput, 'Popeyes');
+    const editExpenseBtn = screen.getByRole('button', { name: 'Editar despesa' });
+    expect(editExpenseBtn).toBeInTheDocument();
+    userEvent.click(editExpenseBtn);
+    expect(descriptionCell).toHaveTextContent('Popeyes');
+  });
 });
